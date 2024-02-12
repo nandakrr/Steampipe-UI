@@ -97,3 +97,24 @@ tar -xf "$zip_location" -C "$tmp_dir"
 #mkdir "$tmp_dir/steampipe"
 chmod -R u+rwX "$tmp_dir/steampipe"
 
+
+echo "Installing"
+install -d "$bin_dir"
+install "$tmp_dir/steampipe" "$bin_dir"
+
+echo "Applying necessary permissions"
+chmod +x $exe
+
+echo "Removing downloaded archive"
+rm "$zip_location"
+
+echo "Steampipe was installed successfully to $exe"
+
+if ! command -v $bin_dir/steampipe >/dev/null; then
+	echo "Steampipe was installed, but could not be executed. Are you sure '$bin_dir/steampipe' has the necessary permissions?"
+	exit 1
+fi
+
+
+
+
