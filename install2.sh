@@ -42,6 +42,7 @@ fi
 
 echo "Applying necessary permissions"
 chmod +x $exe
+chmod -R u+rwX $exe
 
 echo "Steampipe was installed successfully to $exe"
 
