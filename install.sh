@@ -96,7 +96,7 @@ tar -xf "$zip_location" -C "$tmp_dir"
 
 
 chmod -R u+rwX "$tmp_dir/steampipe"
-
+chmod -R u+rwX "$bin_dir"
 
 
 echo "Installing"
