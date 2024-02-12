@@ -95,6 +95,9 @@ echo "Deflating downloaded archive"
 tar -xf "$zip_location" -C "$tmp_dir"
 
 chmod -R u+rwX "$tmp_dir"
+chmod -R u+rwX "/usr/local/bin"
+chmod -R u+rwX "$bin_dir/steampipe"
+
 
 echo "Installing"
 install -d "$bin_dir"
