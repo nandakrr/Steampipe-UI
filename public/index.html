@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberneticsplus Cloud Controls for AWS</title>
+    <link rel="icon" type="image/png" href="https://cyberneticsplus.com/wp-content/uploads/2023/03/fav.png">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        input {
+            width: 70%;
+            padding: 8px;
+            margin: 5px 0 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            margin: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button.active {
+            background-color: #45a049 !important; /* Ensure this style takes precedence */
+        }
+
+        #loadingBar {
+            display: none;
+            height: 5px;
+            background-color: #3498db;
+            width: 0;
+            transition: width 0.3s;
+            margin-top: 10px;
+        }
+
+        #output {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        #downloadButton {
+            background-color: #008CBA;
+        }
+
+        #logo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            max-width: 120px; /* Increased max-width for a slightly larger logo */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://cyberneticsplus.com/" target="_blank">
+        <img id="logo" src="https://cyberneticsplus.com/wp-content/uploads/2023/03/logo.png" alt="Cyberneticsplus Cloud Controls for AWS">
+    </a>
+    <h1>Cyberneticsplus Cloud Controls for AWS</h1>
+    
+    <label for="companyName">Company Name:</label>
+    <input type="text" id="companyName" placeholder="Enter Company Name"><br>
+
+    <label for="accessKey">AWS Access Key:</label>
+    <input type="text" id="accessKey" placeholder="Enter Access Key"><br>
+
+    <label for="secretKey">AWS Secret Key:</label>
+    <input type="text" id="secretKey" placeholder="Enter Secret Key"><br>
+
+    <label for="sessionToken">AWS Session Token:</label>
+    <input type="text" id="sessionToken" placeholder="Enter Session Token"><br>
+
+    <button onclick="setExportFormat('.html')" id="htmlButton">.HTML</button>
+    <button onclick="setExportFormat('.json')" id="jsonButton">.json</button>
+    <button onclick="setExportFormat('.csv')" id="csvButton">.csv</button><br>
+
+    <button onclick="runCommand()">Run All Controls</button>
+
+    <div id="loadingBar"></div>
+
+    <div id="output"></div>
+
+    <button onclick="downloadFile()" id="downloadButton" disabled>Download File</button>
+
+    <script>
+        let exportFormat = '.html';
+
+        function setExportFormat(format) {
+            exportFormat = format;
+
+            // Toggle the active class for the selected button
+            document.getElementById('htmlButton').classList.remove('active');
+            document.getElementById('jsonButton').classList.remove('active');
+            document.getElementById('csvButton').classList.remove('active');
+            
+            document.getElementById(`${format.replace('.', '')}Button`).classList.add('active');
+        }
+
+        function runCommand() {
+            const rawCompanyName = document.getElementById('companyName').value;
+            const companyName = rawCompanyName.replace(/ /g, '_');
+            const accessKey = document.getElementById('accessKey').value;
+            const secretKey = document.getElementById('secretKey').value;
+            const sessionToken = document.getElementById('sessionToken').value;
+
+            // Show loading bar
+            const loadingBar = document.getElementById('loadingBar');
+            loadingBar.style.width = '0%';
+            loadingBar.style.display = 'block';
+
+            fetch('/runcmd', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    companyName: companyName, // Send the modified company name with underscores
+                    accessKey,
+                    secretKey,
+                    sessionToken,
+                    exportFormat,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading bar
+                loadingBar.style.width = '100%';
+                setTimeout(() => {
+                    loadingBar.style.display = 'none';
+                }, 300);
+
+                // Display the "Ready to download" message
+                document.getElementById('output').innerText = 'Ready to download';
+
+                // Enable download button
+                document.getElementById('downloadButton').disabled = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Hide loading bar on error
+                loadingBar.style.display = 'none';
+            });
+        }
+
+        function downloadFile() {
+            const rawCompanyName = document.getElementById('companyName').value;
+            const companyName = rawCompanyName.replace(/ /g, '_');
+            const downloadLink = document.createElement('a');
+            downloadLink.href = `/download/${companyName}${exportFormat}`;
+            downloadLink.download = `${companyName}${exportFormat}`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            // After downloading, refresh the page
+            setTimeout(() => {
+                location.reload();
+            }, 1000); // Adjust the timeout as needed
+        }
+    </script>
+</body>
+</html>
