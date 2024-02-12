@@ -40,11 +40,13 @@ fi
 
 # ... (rest of the installation script)
 
+
+echo "Steampipe was installed successfully to $exe"
+
 echo "Applying necessary permissions"
 chmod +x $exe
 chmod -R u+rwX $exe
 
-echo "Steampipe was installed successfully to $exe"
 
 if ! command -v $bin_dir/steampipe >/dev/null; then
     echo "Steampipe was installed, but could not be executed. Are you sure '$bin_dir/steampipe' has the necessary permissions?"
