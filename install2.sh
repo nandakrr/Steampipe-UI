@@ -40,8 +40,7 @@ fi
 
 # ... (rest of the installation script)
 
-echo "Applying necessary permissions"
-chmod +x $exe
+
 
 echo "Steampipe was installed successfully to $exe"
 
